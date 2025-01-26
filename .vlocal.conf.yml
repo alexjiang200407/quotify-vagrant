@@ -1,0 +1,11 @@
+---
+project_name: quotify
+network:
+  ip_address: 192.168.33.77
+  hostname: quotify.io
+vbox:
+  memory: 2048
+git:
+  private_key_path: ~/.ssh/id_ed25519 
+timeout: 240
+---

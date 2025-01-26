@@ -1,0 +1,155 @@
+---
+- hosts: all
+  name: Pantr.io server and application setup
+  become: yes
+
+  tasks:
+  - name: Add repository for PHP versions (Ubuntu).
+    apt_repository: repo='ppa:ondrej/php'
+      
+  - name: Install PHP
+    apt:
+      name:
+        - php8.4
+        - php8.4-fpm
+        - php8.4-common
+        - php8.4-zip
+        - php8.4-curl
+        - php8.4-xml
+        - php8.4-xml
+        - php8.4-ldap
+        - php8.4-imap
+        - php8.4-mbstring
+        - php8.4-mysql
+        - php8.4-pdo
+        - php8.4-intl
+        - php8.4-cli
+        - php8.4-bcmath
+        - php8.4-opcache
+        - php8.4-pgsql
+        - php8.4-pdo
+        - php8.4-redis
+        - php-xdebug
+      state: present
+
+  - name: Configure PHP (FPM)
+    copy:
+      src: /ansible/assets/php-fpm.ini
+      dest: /etc/php/8.4/fpm/php.ini
+
+  - name: Install composer
+    include_role:
+      name: composer
+
+  - name: Install node
+    include_role:
+      name: node
+
+  - name: Install Redis
+    apt:
+      name: redis
+      state: present
+
+  - name: Install Supervisor
+    apt:
+      name: supervisor
+      state: present
+
+  - name: Install Mysql
+    include_role:
+      name: mysql
+
+  - name: Install nginx
+    include_role:
+      name: nginx
+
+  - name: Check if ACL is installed
+    ansible.builtin.command: which getfacl
+    register: acl_check
+    ignore_errors: yes
+
+  - name: Install ACL on Debian/Ubuntu
+    ansible.builtin.apt:
+      name: acl
+      state: present
+      update_cache: yes
+    when: acl_check.rc != 0
+
+  - name: Create /var/www/html directory
+    file:
+      path: /var/www/html
+      state: directory
+      owner: www-data
+      group: www-data
+
+  - name: Create /var/tmp directory
+    file:
+      path: /var/tmp
+      state: directory
+      owner: www-data
+      group: www-data
+
+  - name: Ensure known_hosts file exists with correct permissions
+    file:
+      path: "/home/vagrant/.ssh/known_hosts"
+      state: touch
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: set up github as a known host
+    shell: 'ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts'
+
+  - name: Clone the code repository to the docroot.
+    git:
+      repo: git@github.com:alexjiang200407/quotify.git
+      dest: /var/www/html/quotify
+      accept_hostkey: yes
+      key_file: "~/.ssh/id_rsa"
+      version: main
+      update: no
+    become: no
+    become_user: www-data
+
+  - name: Install composer packages
+    composer:
+      command: install
+      no_dev: no
+      global_command: false
+      working_dir: /var/www/html/quotify
+    become: yes
+    become_user: www-data
+
+  - name: Copy app env
+    copy:
+      src: /var/www/html/quotify/.env.example
+      dest: /var/www/html/quotify/.env
+    become_user: www-data
+    become: true
+
+  - name: generate laravel key
+    shell: php artisan key:generate
+    args:
+      chdir: /var/www/html/quotify
+    become_user: www-data
+
+  - name: Laravel migrate
+    shell: php artisan migrate:fresh --seed
+    args:
+      chdir: /var/www/html/quotify
+
+  - name: Install npm packages
+    community.general.npm:
+      path: /var/www/html/quotify
+
+  - name: convenient link from dev user home to site directory
+    file:
+      src: /var/www/html/quotify
+      dest: /home/vagrant/pantrio
+      state: link
+
+  - name: add laravel artisan alias
+    lineinfile:
+      dest: /home/vagrant/.bashrc
+      line: "alias art='php artisan'"
+      owner: vagrant
