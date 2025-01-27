@@ -85,13 +85,25 @@
       group: root
       mode: '0644'
 
-  - name: Ensure id_rsa exists and has correct permissions
-    file:
-      path: "/home/vagrant/.ssh/id_rsa"
-      state: file
+  - name: copy git ssh key
+    copy:
+      src: /ansible/assets/id_rsa
+      dest: /home/vagrant/.ssh/id_rsa
       owner: root
       group: root
       mode: '600'
+
+  - name: Check if ACL is installed
+    ansible.builtin.command: which getfacl
+    register: acl_check
+    ignore_errors: yes
+
+  - name: Install ACL on Debian/Ubuntu
+    ansible.builtin.apt:
+      name: acl
+      state: present
+      update_cache: yes
+    when: acl_check.rc != 0
 
   - name: set up github as a known host
     shell: 'ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts'
@@ -105,7 +117,6 @@
       version: main
       update: no
     become: yes
-    # become_user: www-data
 
   - name: Install composer packages
     composer:
