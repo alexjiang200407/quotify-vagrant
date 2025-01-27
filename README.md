@@ -6,7 +6,7 @@ This repo is a used to setup a pre-configured development environment tailored f
 - virtualbox
 
 ## Usage
-First generate a **new** Github ssh public key and copy into ./ansible/assets/id_rsa. Then in the project directory execute the command to boot up the virtual machine:
+First generate a **new** Github ssh private key and copy into ./ansible/assets/id_rsa. Then in the project directory execute the command to boot up the virtual machine:
 ```bash
 vagrant up
 ```
