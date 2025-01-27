@@ -1,0 +1,30 @@
+---
+- name: Create routed node_modules directory
+  file:
+    path: /var/www/quotify_node_modules
+    state: directory
+    owner: www-data
+    group: www-data
+
+- name: Create node_modules directory
+  file:
+    path: /var/www/html/quotify/node_modules
+    state: directory
+    owner: www-data
+    group: www-data
+
+- name: Check if node_modules is already mounted
+  ansible.builtin.shell: mount | grep "/var/www/html/quotify/node_modules"
+  register: mount_check
+  ignore_errors: true
+
+- name: Mount node_modules directory
+  command: >
+    mount --bind '/var/www/quotify_node_modules' '/var/www/html/quotify/node_modules'
+  when: mount_check.rc != 0
+
+- name: Install npm packages
+  community.general.npm:
+    path: /var/www/html/quotify
+    # no_bin_links: true
+  become: true

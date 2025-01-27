@@ -13,3 +13,8 @@
     shell: ansible-galaxy collection install community.mysql
     args:
       chdir: /ansible
+
+  - name: install ansible ansible.posix
+    shell: ansible-galaxy collection install ansible.posix
+    args:
+      chdir: /ansible
