@@ -148,6 +148,8 @@
   - name: Install npm packages
     community.general.npm:
       path: /var/www/html/quotify
+      no_bin_links: true
+    become: true
 
   - name: convenient link from dev user home to site directory
     file:
