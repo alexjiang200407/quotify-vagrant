@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  name: Pantr.io server and application setup
+  name: quotify.io server and application setup
   become: yes
 
   tasks:
@@ -63,18 +63,6 @@
     include_role:
       name: nginx
 
-  - name: Check if ACL is installed
-    ansible.builtin.command: which getfacl
-    register: acl_check
-    ignore_errors: yes
-
-  - name: Install ACL on Debian/Ubuntu
-    ansible.builtin.apt:
-      name: acl
-      state: present
-      update_cache: yes
-    when: acl_check.rc != 0
-
   - name: Create /var/www/html directory
     file:
       path: /var/www/html
@@ -97,6 +85,14 @@
       group: root
       mode: '0644'
 
+  - name: Ensure id_rsa exists and has correct permissions
+    file:
+      path: "/home/vagrant/.ssh/id_rsa"
+      state: file
+      owner: root
+      group: root
+      mode: '600'
+
   - name: set up github as a known host
     shell: 'ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts'
 
@@ -105,11 +101,11 @@
       repo: git@github.com:alexjiang200407/quotify.git
       dest: /var/www/html/quotify
       accept_hostkey: yes
-      key_file: "~/.ssh/id_rsa"
+      key_file: "/home/vagrant/.ssh/id_rsa"
       version: main
       update: no
-    become: no
-    become_user: www-data
+    become: yes
+    # become_user: www-data
 
   - name: Install composer packages
     composer:
@@ -145,7 +141,7 @@
   - name: convenient link from dev user home to site directory
     file:
       src: /var/www/html/quotify
-      dest: /home/vagrant/pantrio
+      dest: /home/vagrant/quotify
       state: link
 
   - name: add laravel artisan alias
