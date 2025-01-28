@@ -30,6 +30,12 @@
     path: /var/www/html/index.nginx-debian.html
     state: absent
 
+- name: Copy nginx.conf
+  copy:
+    src: /ansible/assets/nginx.conf
+    dest: /etc/nginx/nginx.conf
+    mode: '644'
+
 - name: Reload service nginx
   service:
     name: nginx
