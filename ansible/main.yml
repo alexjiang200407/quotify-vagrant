@@ -145,6 +145,11 @@
     args:
       chdir: /var/www/html/quotify
 
+  - name: Laravel schedule
+    shell: php artisan schedule:work
+    args:
+      chdir: /var/www/html/quotify
+
   - name: npm
     include_role:
       name: npm
