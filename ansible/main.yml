@@ -145,8 +145,13 @@
     args:
       chdir: /var/www/html/quotify
 
+  - name: Laravel get daily quote
+    shell: php artisan quote:update-daily
+    args:
+      chdir: /var/www/html/quotify
+
   - name: Laravel schedule
-    shell: php artisan schedule:work
+    shell: nohup php artisan schedule:work > /dev/null 2>&1 &
     args:
       chdir: /var/www/html/quotify
 
