@@ -141,9 +141,14 @@
     become_user: www-data
 
   - name: Laravel migrate
-    shell: php artisan migrate:fresh --seed
+    shell: php artisan migrate:fresh
     args:
       chdir: /var/www/html/quotify
+
+  - name: Fill quotes DB
+    shell: ./psvupdate.py -q quotes.txt -a authors.txt 
+    args:
+      chdir: /var/www/html/quotify/scripts
 
   - name: Laravel get daily quote
     shell: php artisan quote:update-daily
