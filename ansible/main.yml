@@ -146,7 +146,7 @@
       chdir: /var/www/html/quotify
 
   - name: Fill quotes DB
-    shell: ./psvupdate.py -q quotes.txt -a authors.txt 
+    shell: ./psvupdate.py -q quotes.txt -a authors.txt -s signatures.txt
     args:
       chdir: /var/www/html/quotify/scripts
 
