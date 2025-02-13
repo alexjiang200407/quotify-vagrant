@@ -34,7 +34,7 @@
 
   - name: Configure PHP (FPM)
     copy:
-      src: /ansible/assets/php-fpm.ini
+      src: ./assets/php-fpm.ini
       dest: /etc/php/8.4/fpm/php.ini
 
   - name: Install composer
@@ -70,12 +70,30 @@
       owner: www-data
       group: www-data
 
+  - name: Ensure /var/www/html has correct permissions
+    acl:
+      path: /var/www/
+      entity: www-data
+      etype: user
+      permissions: rwx
+      recursive: true
+      state: present
+
   - name: Create /var/tmp directory
     file:
       path: /var/tmp
       state: directory
       owner: www-data
       group: www-data
+
+  - name: Ensure /var/tmp has correct permissions
+    acl:
+      path: /var/www/html
+      entity: www-data
+      etype: user
+      permissions: rwx
+      recursive: true
+      state: present
 
   # - name: Ensure known_hosts file exists with correct permissions
   #   file:
@@ -110,22 +128,26 @@
 
   - name: Clone the code repository to the docroot.
     git:
-      repo: git@github.com:alexjiang200407/quotify.git
+      repo: https://github.com/alexjiang200407/quotify.git
       dest: /var/www/html/quotify
-      # accept_hostkey: yes
+      accept_hostkey: yes
+      force: yes
       # key_file: "/home/vagrant/.ssh/id_rsa"
       version: main
       update: no
     become: yes
 
   - name: Install composer packages
-    composer:
+    community.general.composer:
       command: install
       no_dev: no
-      global_command: false
+      # global_command: false
       working_dir: /var/www/html/quotify
     become: yes
     become_user: www-data
+
+  - name: Add Safe Directory
+    shell: git config --global --add safe.directory /var/www/html/quotify
 
   - name: Copy app env
     copy:
@@ -133,6 +155,14 @@
       dest: /var/www/html/quotify/.env
     become_user: www-data
     become: true
+
+  - name: Give user permissions
+    acl:
+      path: /var/www/html/quotify
+      entity: ubuntu
+      etype: user
+      permissions: rwx
+      state: present
 
   - name: generate laravel key
     shell: php artisan key:generate

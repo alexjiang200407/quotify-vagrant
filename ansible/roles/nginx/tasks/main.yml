@@ -6,7 +6,7 @@
 
 - name: copy nginx config for quotify
   copy:
-    src: /ansible/assets/quotify.nginx
+    src: ./assets/quotify.nginx
     dest: /etc/nginx/sites-available/quotify.nginx
 
 - name: Create symbolic link for quotify enable
@@ -32,7 +32,7 @@
 
 - name: Copy nginx.conf
   copy:
-    src: /ansible/assets/nginx.conf
+    src: ./assets/nginx.conf
     dest: /etc/nginx/nginx.conf
     mode: '644'
 

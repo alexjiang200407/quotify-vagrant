@@ -1,4 +1,4 @@
-#!/usr/bin sh
+#!/usr/bin/sh
 
 # Setup ansible
 sudo hostnamectl set-hostname AnsibleMgmtNode
@@ -15,4 +15,4 @@ ansible-galaxy collection install community.general
 ansible-galaxy collection install community.mysql
 
 # Run ansible
-ansible-playbook main.yml -i inventory
+ansible-playbook ./ansible/main.yml -i ./ansible/inventory
