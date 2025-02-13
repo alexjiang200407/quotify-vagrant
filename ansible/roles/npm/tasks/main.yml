@@ -5,7 +5,6 @@
     no_bin_links: true
   become: true
 
----
 - name: npm build
   shell: npm run build
   args:

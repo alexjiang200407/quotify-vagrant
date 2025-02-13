@@ -136,10 +136,12 @@
       version: main
       update: no
     become: yes
+    become_user: www-data
 
   - name: Add Safe Directory
     shell: git config --global --add safe.directory /var/www/html/quotify
-  
+    become_user: www-data
+    
   - name: Install composer packages
     community.general.composer:
       command: install
@@ -161,6 +163,7 @@
       path: /var/www/html/quotify
       entity: ubuntu
       etype: user
+      recursive: true
       permissions: rwx
       state: present
 
@@ -176,9 +179,10 @@
       chdir: /var/www/html/quotify
 
   - name: Fill quotes DB
-    shell: ./psvupdate.py -q quotes.txt -a authors.txt -s signatures.txt
+    shell: python3 psvupdate.py -q quotes.txt -a authors.txt -s signatures.txt
     args:
       chdir: /var/www/html/quotify/scripts
+    become: true
 
   - name: Laravel get daily quote
     shell: php artisan quote:update-daily
