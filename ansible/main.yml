@@ -137,6 +137,9 @@
       update: no
     become: yes
 
+  - name: Add Safe Directory
+    shell: git config --global --add safe.directory /var/www/html/quotify
+  
   - name: Install composer packages
     community.general.composer:
       command: install
@@ -145,9 +148,6 @@
       working_dir: /var/www/html/quotify
     become: yes
     become_user: www-data
-
-  - name: Add Safe Directory
-    shell: git config --global --add safe.directory /var/www/html/quotify
 
   - name: Copy app env
     copy:
