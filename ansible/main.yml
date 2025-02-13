@@ -77,21 +77,21 @@
       owner: www-data
       group: www-data
 
-  - name: Ensure known_hosts file exists with correct permissions
-    file:
-      path: "/home/vagrant/.ssh/known_hosts"
-      state: touch
-      owner: root
-      group: root
-      mode: '0644'
+  # - name: Ensure known_hosts file exists with correct permissions
+  #   file:
+  #     path: "/home/vagrant/.ssh/known_hosts"
+  #     state: touch
+  #     owner: root
+  #     group: root
+  #     mode: '0644'
 
-  - name: copy git ssh key
-    copy:
-      src: /ansible/assets/id_rsa
-      dest: /home/vagrant/.ssh/id_rsa
-      owner: root
-      group: root
-      mode: '600'
+  # - name: copy git ssh key
+  #   copy:
+  #     src: /ansible/assets/id_rsa
+  #     dest: /home/vagrant/.ssh/id_rsa
+  #     owner: root
+  #     group: root
+  #     mode: '600'
 
   - name: Check if ACL is installed
     ansible.builtin.command: which getfacl
@@ -112,8 +112,8 @@
     git:
       repo: git@github.com:alexjiang200407/quotify.git
       dest: /var/www/html/quotify
-      accept_hostkey: yes
-      key_file: "/home/vagrant/.ssh/id_rsa"
+      # accept_hostkey: yes
+      # key_file: "/home/vagrant/.ssh/id_rsa"
       version: main
       update: no
     become: yes
@@ -167,11 +167,11 @@
   - name: convenient link from dev user home to site directory
     file:
       src: /var/www/html/quotify
-      dest: /home/vagrant/quotify
+      dest: ~/quotify
       state: link
 
   - name: add laravel artisan alias
     lineinfile:
-      dest: /home/vagrant/.bashrc
+      dest: ~/.bashrc
       line: "alias art='php artisan'"
       owner: vagrant
