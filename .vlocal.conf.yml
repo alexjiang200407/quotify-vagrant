@@ -2,7 +2,7 @@
 project_name: quotify
 network:
   ip_address: 192.168.33.77
-  hostname: quotify.io
+  hostname: quotify.chickenkiller.com
 vbox:
   memory: 2048
 git:

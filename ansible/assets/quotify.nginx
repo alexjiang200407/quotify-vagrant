@@ -4,7 +4,7 @@ server {
 
     root /var/www/html/quotify/public;
 
-    server_name quotify.io;
+    server_name quotify.chickenkiller.com;
 
     charset utf-8;
 
