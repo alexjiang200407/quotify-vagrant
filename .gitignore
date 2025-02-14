@@ -2,3 +2,4 @@
 shared
 logs
 id_rsa
+*.pem

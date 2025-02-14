@@ -1,6 +1,6 @@
 ---
 - name: Install npm packages
-  community.general.npm:
+  npm:
     path: /var/www/html/quotify
     no_bin_links: true
   become: true

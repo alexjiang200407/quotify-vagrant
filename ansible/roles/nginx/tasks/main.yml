@@ -9,6 +9,18 @@
     src: ./assets/quotify.nginx
     dest: /etc/nginx/sites-available/quotify.nginx
 
+- name: copy ssl key
+  file: 
+    path: /etc/letsencrypt/live/quotify.strangled.net/
+    recurse: true
+    state: directory
+  copy:
+    src: ./assets/privkey.pem
+    dest: /etc/letsencrypt/live/quotify.strangled.net/privkey.pem
+  copy:
+    src: ./assets/fullchain.pem
+    dest: /etc/letsencrypt/live/quotify.strangled.net/fullchain.pem
+
 - name: Create symbolic link for quotify enable
   file:
     src: /etc/nginx/sites-available/quotify.nginx

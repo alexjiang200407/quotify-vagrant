@@ -1,12 +1,46 @@
 server {
+    if ($host = quotify.strangled.net) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
     listen 80;
     listen [::]:80;
 
     root /var/www/html/quotify/public;
 
-    server_name quotify.chickenkiller.com;
+    server_name quotify.strangled.net;
 
     charset utf-8;
+
+    index index.htm index.html index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    error_page 404 /index.php;
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php8.4-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+
+    ssl_certificate /etc/letsencrypt/live/quotify.strangled.net/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/quotify.strangled.net/privkey.pem;
+
+    charset utf-8;
+
+    root /var/www/html/quotify/public;
+    server_name quotify.strangled.net;
 
     index index.htm index.html index.php;
 

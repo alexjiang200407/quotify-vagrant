@@ -16,3 +16,12 @@ ansible-galaxy collection install community.mysql
 
 # Run ansible
 ansible-playbook ./ansible/main.yml -i ./ansible/inventory
+
+# Fix firewall and setup ip tables
+sudo ufw disable
+sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 80 -j ACCEPT
+sudo iptables -I INPUT 6 -m state --state NEW -p tcp --dport 443 -j ACCEPT
+sudo netfilter-persistent save
+
+# HTTPS 
+sudo apt install certbot python3-certbot-nginx -y
